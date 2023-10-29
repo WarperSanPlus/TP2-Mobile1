@@ -8,9 +8,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.example.tp2.Logger;
 import com.example.tp2.R;
-import com.example.tp2.entities.Monstre;
+import com.example.tp2.entities.MonstreEntity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -23,9 +25,10 @@ public class EnemyFragment extends Fragment {
 
     private int portraitImgId;
     private int frameImgId;
+    private MonstreEntity owner;
 
-    public EnemyFragment() {
-        // Required empty public constructor
+    public EnemyFragment(MonstreEntity owner) {
+        this.owner = owner;
     }
 
     /**
@@ -34,8 +37,8 @@ public class EnemyFragment extends Fragment {
      *
      * @return A new instance of fragment EnemyFragment.
      */
-    public static EnemyFragment newInstance(Monstre monstre) {
-        EnemyFragment fragment = new EnemyFragment();
+    public static EnemyFragment newInstance(MonstreEntity monstre) {
+        EnemyFragment fragment = new EnemyFragment(monstre);
         Bundle args = new Bundle();
         args.putInt(ARG_PORTRAIT, monstre.getPortraitID());
         args.putInt(ARG_FRAME, monstre.getFrameID());
@@ -63,6 +66,20 @@ public class EnemyFragment extends Fragment {
         ImageView frameImg = v.findViewById(R.id.enemyFragment_frameImg);
         frameImg.setImageResource(frameImgId);
 
+        HealthLabel = v.findViewById(R.id.enemyFragment_healthLabel);
+
+        setHealthLabel(owner.getHealth() + "");
+
         return v;
+    }
+
+    private TextView HealthLabel;
+    public void setHealthLabel(String text) {
+        if (HealthLabel == null) {
+            Logger.log("HealthLabel is not defined.");
+            return;
+        }
+
+        HealthLabel.setText(text);
     }
 }

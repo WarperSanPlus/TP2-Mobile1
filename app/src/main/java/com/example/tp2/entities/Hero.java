@@ -6,37 +6,44 @@ package com.example.tp2.entities;
 
 import androidx.annotation.NonNull;
 
-import com.example.tp2.FightActivity;
+import com.example.tp2.activities.FightActivity;
 
 import java.util.Scanner;
 
 /**
  * Déifinition d'un héro
 */
-public class Hero extends Personnage {
-    final static int STARTING_AMMO = 10;
-    final static int MAX_AMMO_PER_TURN = 3;
-    final static int STARTING_HEALTH = 10;
-
-    private genre Genre;
-
-    public genre getGenre() {
-        return Genre;
-    }
-
-    public void setGenre(genre genre) {
-        Genre = genre;
-    }
-
-    // https://www.w3schools.com/java/java_enums.asp
-    enum genre {
+public class Hero extends Entity {
+    // region Genre
+    public enum genre {
         Homme,
         Femme,
         Non_Spécifié
     };
 
+    private genre Genre;
+
+    public genre getGenre() { return Genre; }
+
+    public void setGenre(genre genre) { Genre = genre; }
+    // endregion
+
+    // region Nom
+    private String name;
+
+    public String getName() { return name; }
+
+    public void setName(String name) { this.name = name; }
+    // endregion
+
+
+    final static int STARTING_AMMO = 10;
+    final static int MAX_AMMO_PER_TURN = 3;
+    final static int STARTING_HEALTH = 10;
+
     public Hero(String nom, int munitions, int santé, genre genre) {
-        super(nom, munitions, santé);
+        super(munitions, santé);
+        setName(nom);
         setGenre(genre);
     }
 
@@ -78,7 +85,7 @@ public class Hero extends Personnage {
                 break;
 
             // Nombre aléatoire entre 0 et n * 2
-            int rdmIndex = FightActivity.RNG.nextInt(monstresCountLeft * 2);
+            int rdmIndex = FightActivity.Instance.RNG.nextInt(monstresCountLeft * 2);
 
             // Si l'index est plus grand que le nombre de monstres restants
             if (rdmIndex >= monstresCountLeft)
@@ -98,35 +105,7 @@ public class Hero extends Personnage {
         return getName() + " a " + getAmmoLeft() + " munitions et une santé de " + getHealth();
     }
 
-    public static Hero CréerHero(Scanner reader) {
-        // #region Nom héro
-        System.out.print("Héros! Tapez votre nom: ");
-        String nom = reader.nextLine();
-        // #endregion
-
-        // #region Sexe héro
-        int genreIndex = -1;
-        String question = new String();
-        Hero.genre[] genres = Hero.genre.values();
-        question += "Spécifiez votre genre (";
-        for (int i = 0; i < genres.length; i++) {
-            Hero.genre genre = genres[i];
-            question += i + 1 + ": "; // Ajouter le nombre et le :
-            question += genre.toString().replace('_', ' '); // Ajouter le nom de la valeur
-            question += (i == genres.length - 1 ? "" : ", "); // Ajouter une virgule tant que le dernier élément n'est
-            // pas atteint
-        }
-        question += ")";
-
-        do {
-            genreIndex = 1;//App.AskUserInt(reader, question);
-
-            if (genreIndex > 0 && genreIndex < genres.length)
-                break;
-
-            System.out.println("L'index entré n'est pas valide");
-        } while (true);
-        // #endregion
-        return new Hero(nom, STARTING_AMMO, STARTING_HEALTH, genres[genreIndex]);
+    public double obtenirChanceAttaquer() {
+        return 0.5;
     }
 }

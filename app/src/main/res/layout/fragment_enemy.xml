@@ -1,20 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="100dp"
+    android:layout_height="100dp"
+    android:clickable="false"
+    android:contextClickable="false"
     tools:context=".fragments.EnemyFragment">
 
     <ImageView
         android:id="@+id/enemyFragment_portraitImg"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:src="@drawable/ed5old" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/ed5old"
+        tools:ignore="ContentDescription" />
 
     <ImageView
         android:id="@+id/enemyFragment_frameImg"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:src="@drawable/enemy_frame_container" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/enemy_frame_container"
+        tools:ignore="ContentDescription" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/enemyFragment_healthLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="5dp"
+            android:background="#A4000000"
+            android:gravity="center_horizontal"
+            android:minWidth="80dp"
+            android:text="@string/placeholder"
+            android:textAlignment="gravity"
+            android:textColor="#FF51A2"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>
