@@ -6,8 +6,18 @@
     android:layout_height="match_parent"
     tools:context=".activities.MapActivity">
 
+    <ImageView
+        android:id="@+id/fightActivity_backgroundImg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/bg_game_volcano"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription,ImageContrastCheck" />
+
     <Button
-        android:id="@+id/activityMap_btn"
+        android:id="@+id/mapActivity_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Button" />

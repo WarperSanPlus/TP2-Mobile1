@@ -25,6 +25,7 @@ public abstract class MonstreEntity extends Entity {
         this.race = race;
     }
     // endregion
+
     // region Is Helpful
     private boolean isHelpful;
 
@@ -32,23 +33,19 @@ public abstract class MonstreEntity extends Entity {
 
     public void setHelpful(boolean helpful) { isHelpful = helpful; }
     // endregion
-    // region Enemy Fragment
+
+    // region Enemy IDs
     public abstract int getPortraitID();
     public int getFrameID() { return R.drawable.enemy_frame_container; }
 
-    private EnemyFragment MonstreFragment;
-    public EnemyFragment getMonstreFragment() { return MonstreFragment; }
-    public void setMonstreFragment(EnemyFragment monstreFragment) {
-        MonstreFragment = monstreFragment;
-        MonstreFragment.setHealthLabel(getHealth() + ""); // First update
-    }
     // endregion
+
     // region Health
     @Override
     public void setHealth(int health) {
         super.setHealth(health);
 
-        EnemyFragment f = getMonstreFragment();
+        EnemyFragment f = (EnemyFragment) getDisplayFragment();
 
         if (f != null)
             f.setHealthLabel(getHealth() + "");
@@ -61,21 +58,22 @@ public abstract class MonstreEntity extends Entity {
         setHelpful(FightActivity.Instance.RNG.nextBoolean());
     }
 
-    @Override
-    public int attaque(Scanner reader) {
-        //afficherÉtat();
+    public int attaque() {
         if (isHelpful()) {
-            System.out.println("\t***** Attaque du Monstre:-->Héros soigné");
+            this.logMessage(getRace() + " healed the player 2 HP.");
             return -2;
         }
 
         if (getAmmoLeft() == 0) {
-            System.out.println("\t***** Attaque du Monstre:-->Héros non touché");
+            this.logMessage(getRace() + " is out of ammos.");
             return 0;
         }
 
-        System.out.println("\t***** Attaque du Monstre:-->Héros blessé");
-        setAmmoLeft(getAmmoLeft() - 1);
+        int dmg = 1;
+        removeAmmo(dmg);
+
+        this.logMessage(getRace() + " did " + dmg + " damage(s).");
+
         return 1;
     }
 

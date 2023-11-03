@@ -9,6 +9,12 @@ public class JoynessMonstre extends MonstreEntity {
 
     @Override
     public int getPortraitID() {
-        return R.drawable.ed5old;
+        return R.drawable.joyness_monster;
+    }
+
+    @Override
+    public int attaque() {
+        logMessage(getRace() + " healed the player 2 HP.");
+        return -2; // Always healing
     }
 }

@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.example.tp2.Logger;
 import com.example.tp2.R;
 import com.example.tp2.entities.DarknessMonster;
 import com.example.tp2.entities.JoynessMonstre;
@@ -21,7 +22,10 @@ public class MainActivity extends AppCompatActivity {
 
         FightActivity.RNG = new Random();
 
-        Intent c = new Intent(this, MapActivity.class);
+        Intent c = new Intent(this, AdActivity.class);
+
+        c.putExtra(AdActivity.DESTINATION_ACTIVITY, MapActivity.class);
+
         startActivity(c);
     }
 }

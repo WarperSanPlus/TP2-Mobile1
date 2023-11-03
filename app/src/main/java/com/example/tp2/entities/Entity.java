@@ -1,7 +1,10 @@
 package com.example.tp2.entities;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
+import com.example.tp2.Logger;
+import com.example.tp2.activities.FightActivity;
 import com.example.tp2.interfaces.IJeu;
 
 import java.io.Serializable;
@@ -13,6 +16,7 @@ public abstract class Entity implements IJeu, Serializable {
     public String getUUID() { return _UUID; }
 
     // endregion
+
     // region Ammo Left
     private int ammoLeft;
 
@@ -20,11 +24,12 @@ public abstract class Entity implements IJeu, Serializable {
         return ammoLeft;
     }
 
-    public void setAmmoLeft(int ammoLeft) {
-        this.ammoLeft = ammoLeft;
-    }
+    public void setAmmoLeft(int ammoLeft) { this.ammoLeft = ammoLeft; }
+
+    public void removeAmmo(int amount) { setAmmoLeft(getAmmoLeft() - amount); }
 
     // endregion
+
     // region Health
     private int health;
 
@@ -39,6 +44,23 @@ public abstract class Entity implements IJeu, Serializable {
     public boolean isAlive() { return getHealth() > 0; }
 
     public void takeDamage(int ammount) { setHealth(getHealth() - ammount); }
+    // endregion
+
+    // region Display Fragment
+    private Fragment DisplayFragment;
+
+    public void setDisplayFragment(Fragment frag) { DisplayFragment = frag; }
+    public Fragment getDisplayFragment() { return DisplayFragment; }
+
+    // endregion
+
+    // region Log
+    public void logMessage(String message) {
+        Logger.log(message);
+
+        if (FightActivity.Instance != null)
+            FightActivity.Instance.addMessage(message, this);
+    }
     // endregion
 
     public Entity(int ammoLeft, int health) {

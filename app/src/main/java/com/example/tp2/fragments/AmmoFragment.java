@@ -72,7 +72,10 @@ public class AmmoFragment extends Fragment {
         return v;
     }
 
-    public void setEnableFragment(boolean isEnable){
+    public void setEnableFragment(boolean isEnable) {
+        if (AmmoSlotBtn == null)
+            return;
+
         AmmoSlotBtn.setEnabled(isEnable);
     }
 }
