@@ -1,5 +1,7 @@
 package com.example.tp2.activities;
 
+import androidx.annotation.DrawableRes;
+import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -8,7 +10,6 @@ import androidx.fragment.app.FragmentTransaction;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -20,7 +21,7 @@ import com.example.tp2.managers.AudioManager;
 import com.example.tp2.Logger;
 import com.example.tp2.R;
 import com.example.tp2.entities.Hero;
-import com.example.tp2.entities.MonstreEntity;
+import com.example.tp2.entities.monsters.MonstreEntity;
 import com.example.tp2.fragments.AmmoFragment;
 import com.example.tp2.fragments.EnemyFragment;
 import com.example.tp2.fragments.HeroStatFragment;
@@ -40,6 +41,8 @@ public class FightActivity extends AppCompatActivity {
         Instance = this;
 
         loadBundles(getIntent().getExtras());
+
+        AudioManager.playAudio(getApplicationContext(), R.raw.laugh, null);
 
         roundStarted();
     }
@@ -63,20 +66,35 @@ public class FightActivity extends AppCompatActivity {
     }
 
     private void roundEnded() {
-        addMessage("--- The round has ended ---", null);
+        addMessage("--- " + getString(R.string.roundStarted) + " ---", null, R.drawable.info_game_icon_asset);
 
-        if (MonstresVivants.size() == 0) {
-            gameEnded();
+        if (MonstresVivants.size() == 0 || !HeroCharacter.isAlive()) {
+            gameEnded(HeroCharacter.isAlive());
             return;
         }
 
         roundStarted();
     }
 
-    private void gameEnded() {
-        addMessage("--- The game has ended ---", null);
-
+    private void gameEnded(boolean win) {
         View v = findViewById(R.id.fightActivity_mainLayout);
+
+        int resultId = R.drawable.txt_victory;
+        int soundId = R.raw.victory;
+
+        if (win) {
+            addMessage("--- " + getString(R.string.gameEnded) +" ---", null, R.drawable.info_game_icon_asset);
+
+            resultId = R.drawable.txt_victory;
+            soundId = R.raw.victory;
+        }
+        else {
+            addMessage("--- " + getString(R.string.heroDeath) + " ---", null, R.drawable.orc_green);
+
+            resultId = R.drawable.game_over_defeat;
+            soundId = R.raw.defeat;
+        }
+
         v.setOnClickListener(view -> {
             Intent data = new Intent();
 
@@ -84,17 +102,18 @@ public class FightActivity extends AppCompatActivity {
             data.putExtra(HERO_LAST_HEALTH, HeroCharacter.getHealth());
             // ---
 
-            setResult(RESULT_OK,data);
+            setResult(RESULT_OK, data);
             finish(); // Return to previous activity
         });
 
-        findViewById(R.id.fightActivity_victoryImg).setVisibility(View.VISIBLE);
+        ImageView iv = findViewById(R.id.fightActivity_resultImg);
+        iv.setImageResource(resultId);
+        iv.setVisibility(View.VISIBLE);
 
-        AudioManager.playAudio(this, R.raw.victory, mp -> v.setClickable(true));
+        AudioManager.playAudio(this, soundId, mp -> v.setClickable(true));
     }
 
     // endregion
-
     // region Monstres
     private ArrayList<MonstreEntity> MonstresVivants = new ArrayList<>();
     private ArrayList<View> monstersViewRows = new ArrayList<>();
@@ -106,7 +125,7 @@ public class FightActivity extends AppCompatActivity {
                 (ArrayList<MonstreEntity>) bundle.getSerializable(MONSTRES_ARRAY_NAME);
 
         if (MonstresVivants == null) {
-            Logger.log("Aucun monstre n'a été chargés.");
+            Logger.log("No monster were loaded.");
             return;
         }
 
@@ -120,9 +139,9 @@ public class FightActivity extends AppCompatActivity {
         EnemyFragment enemyFragment = EnemyFragment.newInstance(monstre);
         monstre.setDisplayFragment(enemyFragment);
 
-        ajouterFragment(R.id.fightActivity_rowPlaceholder, enemyFragment);
+        ajouterFragment(R.id.fightActivity_gridLayout, enemyFragment);
 
-        Logger.log("Monstre '" + monstre + "' ajouté !");
+        Logger.log("Monster '" + monstre + "' has been added !");
     }
 
     private void killMonster(int index) {
@@ -145,26 +164,35 @@ public class FightActivity extends AppCompatActivity {
         MonstresVivants.remove(MonstresVivants.size() - 1);
     }
 
-    // TODO : Row management
-    // Add view row
-    // Remove view row
-    // Move monsters in view rows
-
     private void monstersRound() {
-        addMessage("--- Monsters' round started ---", null);
+        addMessage("--- " + getString(R.string.monsterRoundStarted) + " ---", null, R.drawable.orc_green);
 
         for (MonstreEntity monstre : MonstresVivants){
             if (!monstre.isAlive())
                 continue;
 
-            HeroCharacter.takeDamage(monstre.attaque());
+            int amount = monstre.attaque();
+
+            String message;
+
+            if (amount > 0) {
+                monstre.removeAmmo(amount);
+                message = formatString(R.string.enemyDamagePlayer, monstre.getRace(), amount, HeroCharacter.getName());
+            } else if (amount == 0)
+                message = formatString(R.string.enemyNoAmmo, monstre.getRace());
+            else
+                message = formatString(R.string.enemyHealedPlayer, monstre.getRace(), HeroCharacter.getName(), -amount);
+
+            if (message.trim().length() != 0)
+                monstre.logMessage(message);
+
+            HeroCharacter.takeDamage(amount);
         }
 
         roundEnded();
     }
 
     // endregion
-
     // region Ammo
     public static final String AMMO_OPTIONS_NAME = "ammoOptions";
 
@@ -194,15 +222,15 @@ public class FightActivity extends AppCompatActivity {
         if (MonstresVivants.size() == 0)
             return;
 
-        HeroCharacter.logMessage(HeroCharacter.getName() + " used " + amount + " ammo(s).");
+        HeroCharacter.logMessage(formatString(R.string.heroUsedAmmo, HeroCharacter.getName(), amount));
 
         setEnableAmmos(false);
 
-        int ammoUsed = 0;
+        int hitCount = 0;
 
         for (int i = 0; i < amount; i++) {
             if (HeroCharacter.obtenirChanceAttaquer() < RNG.nextDouble()) {
-                HeroCharacter.logMessage(HeroCharacter.getName() + " missed!");
+                HeroCharacter.logMessage(formatString(R.string.heroMissed, HeroCharacter.getName()));
                 continue;
             }
 
@@ -213,22 +241,22 @@ public class FightActivity extends AppCompatActivity {
 
             monstreTouche.takeDamage(1);
 
-            monstreTouche.logMessage(monstreTouche.getRace() + " got hit!");
+            monstreTouche.logMessage(formatString(R.string.monsterHit, monstreTouche.getRace()));
 
-            ammoUsed++;
+            hitCount++;
 
             // Si le monstre n'est pas mort, continue
             if (monstreTouche.isAlive())
                 continue;
 
-            monstreTouche.logMessage(monstreTouche.getRace() + " got killed by " + HeroCharacter.getName() + ".");
+            monstreTouche.logMessage(formatString(R.string.monsterKilled, monstreTouche.getRace(), HeroCharacter.getName()));
             killMonster(rdmIndex);
 
             if (MonstresVivants.size() == 0)
                 break;
         }
 
-        if (ammoUsed == 0)
+        if (hitCount == 0)
         {
             AudioManager.playUrlAudio(
                     "https://sounds.pond5.com/weapons-bullet-large-whoosh-miss-sound-effect-152700983_nw_prev.m4a",
@@ -236,12 +264,11 @@ public class FightActivity extends AppCompatActivity {
                     null);
         }
         else
-            HeroCharacter.removeAmmo(ammoUsed); // Update the # of ammo left
+            HeroCharacter.removeAmmo(amount); // Update the # of ammo left
 
         monstersRound(); // Monsters' turn
     }
     // endregion
-
     // region Background
     public static final String BACKGROUND_ID = "bgGameId";
 
@@ -250,7 +277,6 @@ public class FightActivity extends AppCompatActivity {
         bg.setImageResource(bundle.getInt(BACKGROUND_ID));
     }
     // endregion
-
     // region Hero
     private int roundCount = 0;
 
@@ -286,23 +312,23 @@ public class FightActivity extends AppCompatActivity {
         // If the player can't play, give 1 ammo
         if(!HeroCharacter.canPlay())
         {
-            HeroCharacter.logMessage(HeroCharacter.getName() + " ran out of ammo... so we gave one more!");
+            HeroCharacter.logMessage(formatString(R.string.heroNoAmmo, HeroCharacter.getName()));
             HeroCharacter.removeAmmo(-1);
         }
 
         // Enable ammos
         setEnableAmmos(true);
 
-        addMessage("Round " + roundCount, null);
-        HeroCharacter.logMessage("--- " + HeroCharacter.getName() + "'s turn started ---");
+        // TODO : Set Hero Icon
+        addMessage("Round " + roundCount, null, R.drawable.old_skill_ranger);
+        HeroCharacter.logMessage("--- " + formatString(R.string.heroRoundStart, HeroCharacter.getName()) + " ---");
     }
 
     // endregion
-
     // region In Game Log
     LinearLayout logVertical = null;
 
-    public void addMessage(String message, Entity source) {
+    public void addMessage(String message, Entity source, @DrawableRes int resId) {
 
         if (logVertical == null)
             logVertical = findViewById(R.id.fightActivity_logVertical);
@@ -320,11 +346,24 @@ public class FightActivity extends AppCompatActivity {
 
         tv.setText(message);
 
+        ImageView iv = in_game_log_entry.findViewById(R.id.fight_log_icon_img);
+        iv.setImageResource(resId);
+
         logVertical.addView(in_game_log_entry, 0);
     }
 
     // endregion
 
+    private String formatString(@StringRes int resId, Object...args) {
+        String text = getString(resId); // Get text from id
+
+        // Replace arguments
+        // ${0} est con => Popo est con
+        for (int i = 0; i < args.length; i++) {
+            text = text.replace("${" + i + "}", args[i].toString());
+        }
+        return text;
+    }
     @SuppressLint("MissingSuperCall")
     @Override
     public void onBackPressed() {

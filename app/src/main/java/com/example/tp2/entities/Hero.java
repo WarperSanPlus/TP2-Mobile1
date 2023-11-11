@@ -37,11 +37,6 @@ public class Hero extends Entity {
     public boolean canPlay() { return getAmmoLeft() > 0; }
 
     // region Override
-    @Override
-    public String obtenirÉtat() {
-        return this.toString();
-    }
-
     @NonNull
     @Override
     public String toString() {

@@ -21,7 +21,7 @@
         android:id="@+id/fightActivity_playerStatsView"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="#491B08"
+        android:background="@drawable/top_border_container"
         android:scrollbars="horizontal"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -34,24 +34,22 @@
             android:orientation="horizontal" />
     </ScrollView>
 
-    <TableLayout
-        android:id="@+id/fightActivity_tableLayout"
+    <androidx.gridlayout.widget.GridLayout
+        android:id="@+id/fightActivity_gridLayout"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="25dp"
+        android:layout_marginTop="75dp"
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="350dp"
+        app:columnCount="3"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fightActivity_playerStatsView">
+        app:layout_constraintTop_toTopOf="parent"
+        app:useDefaultMargins="true">
 
-        <TableRow
-            android:id="@+id/fightActivity_rowPlaceholder"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </TableLayout>
+    </androidx.gridlayout.widget.GridLayout>
 
     <LinearLayout
         android:id="@+id/fightActivity_ammoLayout"
@@ -63,7 +61,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fightActivity_tableLayout">
+        app:layout_constraintTop_toBottomOf="@+id/fightActivity_gridLayout">
 
     </LinearLayout>
 
@@ -110,11 +108,12 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ImageView
-        android:id="@+id/fightActivity_victoryImg"
+        android:id="@+id/fightActivity_resultImg"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
         android:layout_marginEnd="30dp"
+        android:layout_marginBottom="24dp"
         android:src="@drawable/txt_victory"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"

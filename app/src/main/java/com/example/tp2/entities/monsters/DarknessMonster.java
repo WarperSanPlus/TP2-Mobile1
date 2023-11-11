@@ -1,4 +1,4 @@
-package com.example.tp2.entities;
+package com.example.tp2.entities.monsters;
 
 import com.example.tp2.R;
 

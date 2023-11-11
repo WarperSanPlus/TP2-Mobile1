@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.example.tp2.Logger;
+import com.example.tp2.R;
 import com.example.tp2.activities.FightActivity;
 import com.example.tp2.interfaces.IJeu;
 
@@ -59,13 +60,17 @@ public abstract class Entity implements IJeu, Serializable {
         Logger.log(message);
 
         if (FightActivity.Instance != null)
-            FightActivity.Instance.addMessage(message, this);
+            FightActivity.Instance.addMessage(message, this, R.drawable.levelup_particle_04);
     }
     // endregion
 
     public Entity(int ammoLeft, int health) {
         setAmmoLeft(ammoLeft);
         setHealth(health);
+    }
+
+    protected int randomBetween(int min, int max) {
+        return FightActivity.RNG.nextInt(max) + min;
     }
 
     // region Override

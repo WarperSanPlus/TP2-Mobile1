@@ -6,8 +6,10 @@
 
 package com.example.tp2.interfaces;
 
+// Interface devenue obselète, car la classe Entity définit une entité de jeu
+
 public interface IJeu {
-    String obtenirÉtat();
+    // String obtenirÉtat();
 
     // attaque() sera specifique pour MonstreEntity
 }

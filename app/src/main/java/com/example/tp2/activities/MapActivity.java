@@ -9,38 +9,43 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import com.example.tp2.R;
-import com.example.tp2.entities.DarknessMonster;
+import com.example.tp2.entities.monsters.DarknessMonster;
 import com.example.tp2.entities.Hero;
-import com.example.tp2.entities.JoynessMonstre;
-import com.example.tp2.entities.MonstreEntity;
+import com.example.tp2.entities.monsters.JoynessMonstre;
+import com.example.tp2.entities.monsters.MonstreEntity;
+import com.example.tp2.entities.monsters.StonageMonster;
 import com.example.tp2.managers.BackgroundManager;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class MapActivity extends AppCompatActivity {
     public static final int EASY_DIFFICULTY = 0;
     public static final int MEDIUM_DIFFICULTY = 2;
     public static final int HARD_DIFFICULTY = 4;
 
-    BackgroundManager.World world = BackgroundManager.World.DESERT;
-    Hero HeroCharacter;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
-        Button b = findViewById(R.id.mapActivity_btn);
-        b.setOnClickListener(v -> startFight(HARD_DIFFICULTY));
+        loadBundle(getIntent().getExtras());
 
-        ImageView bg = findViewById(R.id.fightActivity_backgroundImg);
-        bg.setImageResource(BackgroundManager.getBackgroundImage(world, true));
-
-        HeroCharacter = new Hero("Bob", 3, 123);
+        FightActivity.RNG = new Random();
     }
 
-    private void startFight(int difficulty) {
+    private void loadBundle(Bundle bundle) {
+        loadGameStats(bundle);
+        loadHero(bundle);
+    }
+
+    // region Fight
+    public static final String GAME_DIFFICULTY = "gameDifficulty";
+    public static final String GAME_WORLD = "gameWorld";
+
+    private void startFight(int difficulty, BackgroundManager.World world) {
         Intent toFightActivity = new Intent(this, FightActivity.class);
+
         toFightActivity.putExtra(FightActivity.AMMO_OPTIONS_NAME, generateOptions(difficulty)); // Add options
         toFightActivity.putExtra(FightActivity.MONSTRES_ARRAY_NAME, generateMonsters(difficulty)); // Add monsters
 
@@ -54,14 +59,44 @@ public class MapActivity extends AppCompatActivity {
         startActivityForResult(toFightActivity, 1);
     }
 
+    private void loadGameStats(Bundle bundle) {
+        int chosenDifficulty = bundle.getInt(GAME_DIFFICULTY, MEDIUM_DIFFICULTY);
+        BackgroundManager.World world = (BackgroundManager.World) bundle.getSerializable(GAME_WORLD);
+
+        Button b = findViewById(R.id.mapActivity_btn);
+        b.setOnClickListener(v -> startFight(chosenDifficulty, world));
+
+        ImageView bg = findViewById(R.id.fightActivity_backgroundImg);
+        bg.setImageResource(BackgroundManager.getBackgroundImage(world, true));
+    }
+    // endregion
+    // region Monsters
     private ArrayList<MonstreEntity> generateMonsters(int difficulty) {
         ArrayList<MonstreEntity> monstres = new ArrayList<>();
-        monstres.add(new DarknessMonster(1, 1));
+        monstres.add(new DarknessMonster(1, 2));
         monstres.add(new JoynessMonstre(2, 3));
         monstres.add(new DarknessMonster(3, 1));
         monstres.add(new DarknessMonster(3, 2));
+        monstres.add(new DarknessMonster(3, 2));
+        monstres.add(new DarknessMonster(3, 2));
+        monstres.add(new DarknessMonster(3, 2));
+        monstres.add(new StonageMonster(3, 2));
         return  monstres;
     }
+    // endregion
+    // region Hero
+    public static final String HERO_NAME = "heroName";
+    public static final String HERO_HEALTH = "heroHealth";
+
+    private Hero HeroCharacter;
+
+    private void loadHero(Bundle bundle) {
+        String heroName = bundle.getString(HERO_NAME);
+        int heroHealth = bundle.getInt(HERO_HEALTH);
+
+        HeroCharacter = new Hero(heroName, 10, heroHealth); // PLACEHOLDERS
+    }
+
     private byte[] generateOptions(int difficulty) {
         byte[] options;
 
@@ -92,6 +127,8 @@ public class MapActivity extends AppCompatActivity {
         return amount;
     }
 
+    // endregion
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (resultCode != RESULT_OK)
@@ -99,6 +136,10 @@ public class MapActivity extends AppCompatActivity {
 
         // --- Update Hero Health ---
         int h = data.getIntExtra(FightActivity.HERO_LAST_HEALTH, HeroCharacter.getHealth());
+
+        if (h <= 0) { // If hero is dead
+            finish(); // Return to previous activity
+        }
 
         HeroCharacter.setHealth(h);
         // ---

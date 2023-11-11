@@ -1,27 +1,22 @@
 package com.example.tp2.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
-import android.media.AudioAttributes;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.widget.VideoView;
 
 import com.example.tp2.Config;
+import com.example.tp2.Logger;
 import com.example.tp2.R;
 
-import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.Random;
 
 public class AdActivity extends AppCompatActivity {
-
-    public static final String DESTINATION_ACTIVITY = "destActivity";
+    private static final String DESTINATION_ACTIVITY = "destActivity";
 
     private static final String[] ADS_LINKS = {
             "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
@@ -70,6 +65,16 @@ public class AdActivity extends AppCompatActivity {
 
         c.replaceExtras(extraBundle);
 
+        finish(); // Remove AdActivity from the callstack
         startActivity(c);
+    }
+
+    public static void startActivityWithAd(Context ctx, Class destination, Bundle extras) {
+        Intent c = new Intent(ctx, AdActivity.class);
+
+        c.replaceExtras(extras);
+        c.putExtra(AdActivity.DESTINATION_ACTIVITY, destination);
+
+        ctx.startActivity(c);
     }
 }

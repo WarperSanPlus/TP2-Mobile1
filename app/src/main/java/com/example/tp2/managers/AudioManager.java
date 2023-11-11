@@ -33,19 +33,14 @@ public class AudioManager {
         try {
             mp.setDataSource(url);
 
-            if (useAsync)
-            {
-                mp.setOnPreparedListener(mediaPlayer -> {
-                    mediaPlayer.start();
-                });
+            mp.setOnPreparedListener(mediaPlayer -> {
+                mediaPlayer.start();
+            });
 
+            if (useAsync)
                 mp.prepareAsync();
-            }
             else
-            {
                 mp.prepare();
-                mp.start();
-            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

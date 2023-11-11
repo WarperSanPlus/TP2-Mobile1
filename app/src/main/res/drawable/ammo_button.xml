@@ -2,7 +2,7 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:state_pressed="true"
-        android:drawable="@drawable/ed5old" />
+        android:drawable="@drawable/disable_ammo_slot" />
 
     <item
         android:state_enabled="false"

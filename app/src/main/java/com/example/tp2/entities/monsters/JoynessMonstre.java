@@ -1,6 +1,7 @@
-package com.example.tp2.entities;
+package com.example.tp2.entities.monsters;
 
 import com.example.tp2.R;
+import com.example.tp2.activities.FightActivity;
 
 public class JoynessMonstre extends MonstreEntity {
     public JoynessMonstre(int munitions, int santé) {
@@ -13,8 +14,12 @@ public class JoynessMonstre extends MonstreEntity {
     }
 
     @Override
-    public int attaque() {
-        logMessage(getRace() + " healed the player 2 HP.");
-        return -2; // Always healing
+    protected boolean initialHelpfulRoll() {
+        return true; // Always helpful
+    }
+
+    @Override
+    protected int onHelpfulAttack() {
+        return -randomBetween(2, 4);
     }
 }

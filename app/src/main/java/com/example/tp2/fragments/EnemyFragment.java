@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.example.tp2.Logger;
 import com.example.tp2.R;
-import com.example.tp2.entities.MonstreEntity;
+import com.example.tp2.entities.monsters.MonstreEntity;
 
 /**
  * A simple {@link Fragment} subclass.

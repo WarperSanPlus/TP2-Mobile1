@@ -2,4 +2,25 @@
     <string name="app_name">TP2</string>
 
     <string name="placeholder">PLACEHOLDER</string>
+    <string name="readyBtn">READY</string>
+    <string name="easyDifficulty">Easy</string>
+    <string name="mediumDifficulty">Medium</string>
+    <string name="hardDifficulty">Hard</string>
+    <string name="monsterRoundStarted">Monsters\' round started</string>
+    <string name="roundStarted">Round started</string>
+    <string name="gameEnded">The game has ended</string>
+    <string name="heroDeath">The hero has fallen to the monsters</string>
+    <string name="heroUsedAmmo">${0} used ${1} ammo(s)</string>
+    <string name="heroMissed">${0} missed !</string>
+    <string name="monsterHit">${0} got hit !</string>
+    <string name="monsterKilled">${0} got killed by ${1}.</string>
+    <string name="heroNoAmmo">${0} ran out of ammos, so we gave another one !</string>
+    <string name="heroRoundStart">${0}\'s turn started</string>
+    <string name="invalidDifficuly">Please select a valid difficulty</string>
+    <string name="invalidStartHealth">Please enter an amount higher than 0</string>
+    <string name="heroNameHint">Enter the hero\'s name</string>
+    <string name="invalidHeroName">Please enter a name for the hero</string>
+    <string name="enemyDamagePlayer">${0} did {1} damage(s) to ${2}</string>
+    <string name="enemyNoAmmo">${0} is out of ammos</string>
+    <string name="enemyHealedPlayer">${0} healed ${1} ${2} HP</string>
 </resources>
